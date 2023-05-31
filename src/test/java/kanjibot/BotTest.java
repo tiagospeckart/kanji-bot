@@ -1,5 +1,6 @@
 package kanjibot;
 
+import kanjibot.bot.Bot;
 import org.junit.jupiter.api.*;
 import org.testng.Assert;
 

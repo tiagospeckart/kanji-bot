@@ -1,4 +1,4 @@
-package kanjibot;
+package kanjibot.bot;
 
 import java.io.IOException;
 import java.io.InputStream;
