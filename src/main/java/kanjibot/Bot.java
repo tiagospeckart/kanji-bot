@@ -8,48 +8,24 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 public class Bot extends TelegramLongPollingBot {
-    private String botUsername;
-    private String botToken;
-    private ConnectionDB dbConnection;
+    private final BotProperties botProperties;
 
     public Bot() {
-        Properties props = new Properties();
-        InputStream is = getClass().getClassLoader().getResourceAsStream("environment.properties");
-        if (is != null) {
-            try {
-                props.load(is);
-                this.botUsername = props.getProperty("BOT_NAME");
-                this.botToken = props.getProperty("BOT_TOKEN");
-
-                this.dbConnection = new ConnectionDB();
-                MongoCollection<Document> collection = dbConnection.getCollection();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("Provide appropriate Bot API Token and Bot");
-        }
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (dbConnection != null) {
-                dbConnection.closeConnection();
-            }
-        }));
+        this.botProperties = new BotProperties();
+        ConnectionDB dbConnection = new ConnectionDB();
+        MongoCollection<Document> collection = dbConnection.getCollection();
+        Runtime.getRuntime().addShutdownHook(new Thread(dbConnection::closeConnection));
     }
 
     @Override
     public String getBotUsername() {
-        return botUsername;
+        return botProperties.getBotUsername();
     }
 
     @Override
     public String getBotToken() {
-        return botToken;
+        return botProperties.getBotToken();
     }
 
     @Override
